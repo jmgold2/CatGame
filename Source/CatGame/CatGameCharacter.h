@@ -38,11 +38,14 @@ class ACatGameCharacter : public ACharacter
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* MoveAction;
+	UInputAction* Move;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* Interact;
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* LookAction;
+	UInputAction* Look;
 
 public:
 	ACatGameCharacter();
@@ -51,10 +54,22 @@ public:
 protected:
 
 	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
+	void Walk(const FInputActionValue& Value);
 
 	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
+	void MoveCamera(const FInputActionValue& Value);
+
+	/* Called when interacting with a grabbable object*/
+	void PickUp(const FInputActionValue& Value);
+
+	/* Called when a grabbable object is interacted with while already holding something*/
+	void Drop(const FInputActionValue& Value);
+
+	/* Called for initial interact before object type determines future action */
+	void InitInteract(const FInputActionValue& Value);
+
+	//checks if character already holding something
+	bool objHeld;
 			
 
 protected:

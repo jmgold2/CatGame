@@ -16,8 +16,7 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 //////////////////////////////////////////////////////////////////////////
 // ACatGameCharacter
 
-ACatGameCharacter::ACatGameCharacter()
-{
+ACatGameCharacter::ACatGameCharacter(){
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -54,8 +53,7 @@ ACatGameCharacter::ACatGameCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-void ACatGameCharacter::BeginPlay()
-{
+void ACatGameCharacter::BeginPlay(){
 	// Call the base class  
 	Super::BeginPlay();
 
@@ -67,13 +65,15 @@ void ACatGameCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	//initialize boolean
+	objHeld = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void ACatGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
+void ACatGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent){
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
@@ -82,10 +82,17 @@ void ACatGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACatGameCharacter::Move);
+		EnhancedInputComponent->BindAction(Move, ETriggerEvent::Triggered, this, &ACatGameCharacter::Walk);
 
 		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACatGameCharacter::Look);
+		EnhancedInputComponent->BindAction(Look, ETriggerEvent::Triggered, this, &ACatGameCharacter::MoveCamera);
+
+		//interacting with objects in the world
+		EnhancedInputComponent->BindAction(Interact, ETriggerEvent::Started, this, &ACatGameCharacter::PickUp);
+		/*
+		* Binding this should be uneccessary
+		* EnhancedInputComponent->BindAction(Interact, ETriggerEvent::Completed, this, &ACatGameCharacter::Drop);
+		*/
 	}
 	else
 	{
@@ -93,8 +100,7 @@ void ACatGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	}
 }
 
-void ACatGameCharacter::Move(const FInputActionValue& Value)
-{
+void ACatGameCharacter::Walk(const FInputActionValue& Value){
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -116,8 +122,7 @@ void ACatGameCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void ACatGameCharacter::Look(const FInputActionValue& Value)
-{
+void ACatGameCharacter::MoveCamera(const FInputActionValue& Value){
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
@@ -127,4 +132,24 @@ void ACatGameCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+//start here while determing the type of object being interacted with then send to the correct action
+void ACatGameCharacter::InitInteract(const FInputActionValue& Value) {
+	
+}
+
+void ACatGameCharacter::PickUp(const FInputActionValue& Value) {
+	//call drop if already holding something
+	if (objHeld) {
+		Drop(Value);
+	}
+	//otherwise pickup as normal
+	else {
+
+	}
+}
+
+void ACatGameCharacter::Drop(const FInputActionValue& Value) {
+
 }
