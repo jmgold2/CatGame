@@ -4,21 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "DrinkObj.generated.h"
+#include "PushObj.generated.h"
 
 UCLASS()
-class CATGAME_API ADrinkObj : public AActor
+class CATGAME_API APushObj : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ADrinkObj();
+	APushObj();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 
 	//mesh for actor
 	UPROPERTY(EditAnywhere)
@@ -27,6 +26,7 @@ protected:
 	//physical model for actor
 	UPROPERTY(EditAnywhere)
 	USceneComponent* actualComp;
+
 
 public:	
 	// Called every frame

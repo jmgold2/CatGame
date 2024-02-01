@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DrinkObj.h"
+#include "PushObj.h"
 
 // Sets default values
-ADrinkObj::ADrinkObj()
+APushObj::APushObj()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -12,14 +12,14 @@ ADrinkObj::ADrinkObj()
 }
 
 // Called when the game starts or when spawned
-void ADrinkObj::BeginPlay()
+void APushObj::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void ADrinkObj::Tick(float DeltaTime)
+void APushObj::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 

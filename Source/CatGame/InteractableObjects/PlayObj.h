@@ -4,20 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "FoodObj.generated.h"
+#include "PlayObj.generated.h"
 
 UCLASS()
-class CATGAME_API AFoodObj : public AActor
+class CATGAME_API APlayObj : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AFoodObj();
+	APlayObj();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	//mesh for actor
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* mesh;
+
+	//physical model for actor
+	UPROPERTY(EditAnywhere)
+	USceneComponent* actualComp;
+
 
 public:	
 	// Called every frame
