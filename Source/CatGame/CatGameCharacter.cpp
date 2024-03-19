@@ -10,6 +10,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "InteractableObjects/FoodObj.h"
+#include "InteractableObjects/GrabObj.h"
+#include "InteractableObjects/PlayObj.h"
+#include "InteractableObjects/PushObj.h"
+#include "InteractableObjects/ScratchObj.h"
+#include "InteractableObjects/SniffObj.h"
+#include "InteractableObjects/DrinkObj.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -38,18 +45,23 @@ ACatGameCharacter::ACatGameCharacter(){
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
+	catMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CatMesh"));
+	catMesh->SetupAttachment(RootComponent);
+
+	//may have to initialize interactObj not sure yet
+
 	// Create a camera boom (pulls in towards the player if there is a collision)
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	cameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	cameraBoom->SetupAttachment(catMesh);
+	cameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
+	cameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	followCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	followCamera->SetupAttachment(cameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	followCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+	// Note: The anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
@@ -67,7 +79,7 @@ void ACatGameCharacter::BeginPlay(){
 	}
 
 	//initialize boolean
-	objHeld = false;
+	interactInProg = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -136,12 +148,43 @@ void ACatGameCharacter::MoveCamera(const FInputActionValue& Value){
 
 //start here while determing the type of object being interacted with then send to the correct action
 void ACatGameCharacter::InitInteract(const FInputActionValue& Value) {
-	
+	if (interactInProg == false) {
+		//draw line from cat in direction of the camera and identify class of object we want to interact with to trigger approriate function
+		start = catMesh->GetComponentLocation();
+		forwardVector = followCamera->GetForwardVector();
+		end = (forwardVector * 100.0f) + start;
+
+		if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECC_Visibility, defaultCompQueryParams, defaultResponseParams)) {
+			//send to the desired function
+			if (hit.GetActor()->GetClass()->IsChildOf(APushObj::StaticClass()) ) {
+
+			}
+			else if (hit.GetActor()->GetClass()->IsChildOf(ADrinkObj::StaticClass())) {
+
+			}
+			else if (hit.GetActor()->GetClass()->IsChildOf(AScratchObj::StaticClass())) {
+
+			}
+			else if (hit.GetActor()->GetClass()->IsChildOf(AFoodObj::StaticClass())) {
+
+			}
+			else if (hit.GetActor()->GetClass()->IsChildOf(AGrabObj::StaticClass())) {
+
+			}
+			else if (hit.GetActor()->GetClass()->IsChildOf(APlayObj::StaticClass())) {
+
+			}
+			else if (hit.GetActor()->GetClass()->IsChildOf(ASniffObj::StaticClass())) {
+
+			}
+		}
+	}
+
 }
 
 void ACatGameCharacter::PickUp(const FInputActionValue& Value) {
 	//call drop if already holding something
-	if (objHeld) {
+	if (interactInProg) {
 		Drop(Value);
 	}
 	//otherwise pickup as normal

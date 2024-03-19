@@ -22,11 +22,14 @@ class ACatGameCharacter : public ACharacter
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* CameraBoom;
+	USpringArmComponent* cameraBoom;
 
-	/** Follow camera */
+	/** follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FollowCamera;
+	UCameraComponent* followCamera;
+
+	UPROPERTY(VisibleAnywhere, Category = Mesh)
+	USkeletalMeshComponent* catMesh;
 	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -68,8 +71,20 @@ protected:
 	/* Called for initial interact before object type determines future action */
 	void InitInteract(const FInputActionValue& Value);
 
-	//checks if character already holding something
-	bool objHeld;
+	//checks if character alreadu interacting with something
+	bool interactInProg;
+
+	//actor to interact with
+	UPROPERTY(EditAnywhere)
+	class AActor* interactObj;
+
+	//used in to find actor for interact
+	FVector start;
+	FVector forwardVector;
+	FVector end;
+	FHitResult hit;
+	FComponentQueryParams defaultCompQueryParams;
+	FCollisionResponseParams defaultResponseParams;
 			
 
 protected:
@@ -80,9 +95,11 @@ protected:
 	virtual void BeginPlay();
 
 public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	/** Returns cameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return cameraBoom; }
+	/** Returns followCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return followCamera; }
+	/** Returns catMesh subobject **/
+	FORCEINLINE class USkeletalMeshComponent* GetMesh() const { return catMesh; }
 };
 
